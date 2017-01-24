@@ -15,28 +15,45 @@
  */
 package com.example.android.quakereport;
 
+import android.app.LoaderManager;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.Intent;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
+import android.content.Loader;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class EarthquakeActivity extends AppCompatActivity {
+public class EarthquakeActivity extends AppCompatActivity implements LoaderCallbacks<ArrayList<Earthquake>> {
 
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
 
+    /**
+     * Constant value for the earthquake loader ID. We can choose any integer.
+     * This really only comes into play if you're using multiple loaders.
+     */
+    private static final int EARTHQUAKE_LOADER_ID = 1;
 
     //JSON query URL returns 10 most ercent earthquakes with at least a magnitude of 6
     private static final String EARTHQUAKE_URL = "http://earthquake.usgs.gov/fdsnws/event/1/" +
             "query?format=geojson&eventtype=earthquake&orderby=time&minmag=6&limit=10";
+
+    //Adapter for the list of earthquakes
+    private EarthquakeAdapter mAdapter;
+
 
 
     @Override
@@ -56,14 +73,28 @@ public class EarthquakeActivity extends AppCompatActivity {
         earthquakes.add(new Earthquake(5.5, "Paris, France", 1485059423, "www.google.com"));
 */
 
+/*
 
         //Request JSON data from web server, parse the data, and create a list of earthquakes
         EarthquakeAsyncTask task = new EarthquakeAsyncTask();
         task.execute(EARTHQUAKE_URL);
+*/
+
+        // Create a new adapter that takes an empty list of earthquakes as input
+        mAdapter = new EarthquakeAdapter(this, new ArrayList<Earthquake>());
+
+        // Get a reference to the LoaderManager, in order to interact with loaders.
+        LoaderManager loaderManager = getLoaderManager();
+
+        // Initialize the loader. Pass in the int ID constant defined above and pass in null for
+        // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
+        // because this activity implements the LoaderCallbacks interface).
+        loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null, this);
 
     }
 
-    private void updateUi (ArrayList<Earthquake> earthquakes){
+
+    private void updateUi (List<Earthquake> earthquakes){
 
         // Find a reference to the {@link ListView} in the layout
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
@@ -97,29 +128,29 @@ public class EarthquakeActivity extends AppCompatActivity {
 
     }
 
-    //Create an AsyncTask to handle getting the JSON Response
-    private class EarthquakeAsyncTask extends AsyncTask<String, Void, ArrayList<Earthquake>> {
+    @Override
+    public Loader<ArrayList<Earthquake>> onCreateLoader(int i, Bundle bundle) {
+        // Create a new loader for the given URL
+        return new EarthquakeLoader(this, EARTHQUAKE_URL);
+    }
 
-        @Override
-        protected ArrayList doInBackground(String... urls) {
+    @Override
+    public void onLoadFinished(Loader<ArrayList<Earthquake>> loader, ArrayList<Earthquake> earthquakes) {
+        // Clear the adapter of previous earthquake data
+        mAdapter.clear();
 
-            // Perform the HTTP request for earthquake data and process the response.
-            if (urls.length < 1 || urls[0] == null) {
-                return null;
-            }
 
-            ArrayList<Earthquake> result = QueryUtils.fetchEarthquakeData(urls[0]);
-            return result;
+        // If there is a valid list of {@link Earthquake}s, then add them to the adapter's
+        // data set. This will trigger the ListView to update.
+        if (earthquakes != null && !earthquakes.isEmpty()) {
+            mAdapter.addAll(earthquakes);
+            updateUi(earthquakes);
         }
+    }
 
-        @Override
-        protected void onPostExecute(ArrayList<Earthquake> result) {
-
-            // If there is no result, do nothing.
-            if (result == null) {
-                return;
-            }
-            updateUi(result);
-        }
+    @Override
+    public void onLoaderReset(Loader<ArrayList<Earthquake>> loader) {
+        // Loader reset, so we can clear out our existing data.
+        mAdapter.clear();
     }
 }

@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.graphics.drawable.GradientDrawable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Amanda on 12/8/2016.
@@ -22,7 +23,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
      * @param context
      * @param earthquakes List of Earthquake objects to display in a list
      */
-    public EarthquakeAdapter (Activity context, ArrayList<Earthquake> earthquakes){
+    public EarthquakeAdapter (Activity context, List<Earthquake> earthquakes){
         super(context, 0, earthquakes);
     }
 

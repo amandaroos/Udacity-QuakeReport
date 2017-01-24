@@ -10,9 +10,21 @@ import java.util.List;
  * Created by Amanda on 1/24/2017.
  */
 
-public class EarthquakeLoader extends AsyncTaskLoader <List<Earthquake>>{
-    public EarthquakeLoader (Context context) {
+public class EarthquakeLoader extends AsyncTaskLoader <ArrayList<Earthquake>>{
+
+    private static final String LOG_TAG = EarthquakeLoader.class.getName();
+
+    //Query url
+    private String mUrl;
+
+    /**constructor for new {@link EarthquakeLoader}
+     *
+     * @param context of the activity
+     * @param url to load data from
+     */
+    public EarthquakeLoader (Context context, String url) {
         super(context);
+        mUrl = url;
     }
 
     @Override
@@ -20,15 +32,17 @@ public class EarthquakeLoader extends AsyncTaskLoader <List<Earthquake>>{
         forceLoad();
     }
 
+    //this is on the background thread
     @Override
-    public List<Earthquake> loadInBackground() {
+    public ArrayList<Earthquake> loadInBackground( ) {
 
-        //JSON query URL returns 10 most ercent earthquakes with at least a magnitude of 6
-        String EARTHQUAKE_URL = "http://earthquake.usgs.gov/fdsnws/event/1/" +
-                "query?format=geojson&eventtype=earthquake&orderby=time&minmag=6&limit=10";
+        // Perform the HTTP request for earthquake data and process the response.
+        if (mUrl == null) {
+            return null;
+        }
 
-
-        ArrayList<Earthquake> result = QueryUtils.fetchEarthquakeData(EARTHQUAKE_URL);
+        //Perform the network request, parse the response, and extract list of earthquakes
+        ArrayList<Earthquake> result = QueryUtils.fetchEarthquakeData(mUrl);
         return result;
     }
 }
