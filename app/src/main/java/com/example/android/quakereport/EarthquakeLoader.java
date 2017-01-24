@@ -2,6 +2,7 @@ package com.example.android.quakereport;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,12 +31,14 @@ public class EarthquakeLoader extends AsyncTaskLoader <ArrayList<Earthquake>>{
     @Override
     protected void onStartLoading() {
         forceLoad();
+        Log.e(LOG_TAG,"onStartLoading");
     }
 
     //this is on the background thread
     @Override
     public ArrayList<Earthquake> loadInBackground( ) {
 
+        Log.e(LOG_TAG,"loadInBackground");
         // Perform the HTTP request for earthquake data and process the response.
         if (mUrl == null) {
             return null;

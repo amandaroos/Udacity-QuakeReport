@@ -27,6 +27,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -90,7 +91,7 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderCallb
         // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
         // because this activity implements the LoaderCallbacks interface).
         loaderManager.initLoader(EARTHQUAKE_LOADER_ID, null, this);
-
+        Log.e(LOG_TAG,"Initializing Loader");
     }
 
 
@@ -130,6 +131,7 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderCallb
 
     @Override
     public Loader<ArrayList<Earthquake>> onCreateLoader(int i, Bundle bundle) {
+        Log.e(LOG_TAG,"onCreateLoader");
         // Create a new loader for the given URL
         return new EarthquakeLoader(this, EARTHQUAKE_URL);
     }
@@ -146,11 +148,13 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderCallb
             mAdapter.addAll(earthquakes);
             updateUi(earthquakes);
         }
+        Log.e(LOG_TAG,"onLoadFinished");
     }
 
     @Override
     public void onLoaderReset(Loader<ArrayList<Earthquake>> loader) {
         // Loader reset, so we can clear out our existing data.
         mAdapter.clear();
+        Log.e(LOG_TAG,"onLoaderReset");
     }
 }
