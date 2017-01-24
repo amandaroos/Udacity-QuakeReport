@@ -15,6 +15,11 @@ public class EarthquakeLoader extends AsyncTaskLoader <List<Earthquake>>{
     }
 
     @Override
+    protected void onStartLoading() {
+        forceLoad();
+    }
+
+    @Override
     public List<Earthquake> loadInBackground() {
         return null;
     }
