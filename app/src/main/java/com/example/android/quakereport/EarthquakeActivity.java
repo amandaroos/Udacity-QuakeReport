@@ -49,9 +49,8 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderCallb
      */
     private static final int EARTHQUAKE_LOADER_ID = 1;
 
-    //JSON query URL returns 10 most ercent earthquakes with at least a magnitude of 6
-    private static final String EARTHQUAKE_URL = "http://earthquake.usgs.gov/fdsnws/event/1/" +
-            "query?format=geojson&eventtype=earthquake&orderby=time&minmag=2&limit=50";
+    //JSON query base URI
+    private static final String EARTHQUAKE_URL = "http://earthquake.usgs.gov/fdsnws/event/1/query";
 
     //Adapter for the list of earthquakes
     private EarthquakeAdapter mAdapter;
@@ -133,8 +132,21 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderCallb
     @Override
     public Loader<ArrayList<Earthquake>> onCreateLoader(int i, Bundle bundle) {
         Log.e(LOG_TAG,"onCreateLoader");
+
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String minMagnitude = sharedPrefs.getString(
+                getString(R.string.settings_min_magnitude_key),
+                getString(R.string.settings_min_magnitude_default));
+        Uri baseUri = Uri.parse(EARTHQUAKE_URL);
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+
+        uriBuilder.appendQueryParameter("format", "geojson");
+        uriBuilder.appendQueryParameter("limit", "50");
+        uriBuilder.appendQueryParameter("minmag", minMagnitude);
+        uriBuilder.appendQueryParameter("orderby", "time");
+
         // Create a new loader for the given URL
-        return new EarthquakeLoader(this, EARTHQUAKE_URL);
+        return new EarthquakeLoader(this, uriBuilder.toString());
     }
 
     @Override
