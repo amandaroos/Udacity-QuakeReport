@@ -1,4 +1,5 @@
 package com.example.android.quakereport;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -14,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.android.quakereport.EarthquakeActivity.LOG_TAG;
 
@@ -48,9 +50,11 @@ public final class QueryUtils {
     /**
      * Returns a list of Earthquakes from a given string URL
      * @param requestUrl
-     * @return ArrayList<Earthquake>
+     * @return List<Earthquake>
      */
     public static ArrayList<Earthquake> fetchEarthquakeData(String requestUrl) {
+        Log.e(LOG_TAG,"fetchEarthquakeData");
+
         // Create URL object
         URL url = createUrl(requestUrl);
 
@@ -63,7 +67,9 @@ public final class QueryUtils {
         }
 
         //Parses the JSON response and returns array list of earthquakes
-        return extractEarthquakes(jsonResponse);
+        ArrayList<Earthquake> earthquakes = extractEarthquakes(jsonResponse);
+
+        return earthquakes;
     }
 
     /**
@@ -140,7 +146,12 @@ public final class QueryUtils {
      */
     public static ArrayList<Earthquake> extractEarthquakes(String jsonResponse) {
 
-        // Create an empty ArrayList that we can start adding earthquakes to
+        // If the JSON string is empty or null, then return early.
+        if (TextUtils.isEmpty(jsonResponse)) {
+            return null;
+        }
+
+        // Create an empty List that we can start adding earthquakes to
         ArrayList<Earthquake> earthquakes = new ArrayList<>();
 
         // Try to parse the SAMPLE_JSON_RESPONSE. If there's a problem with the way the JSON
