@@ -93,6 +93,7 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderCallb
                 Earthquake earthquake = mAdapter.getItem(position);
 
                 //Send intent to open the website for the earthquake that was clicked
+                //TODO getWebsite() could return null pointer
                 Uri webpage = Uri.parse(earthquake.getWebsite());
                 Intent openWebsite = new Intent(Intent.ACTION_VIEW, webpage);
                 //openWebsite.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -150,6 +151,8 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderCallb
         uriBuilder.appendQueryParameter("limit", "10");
         uriBuilder.appendQueryParameter("minmag", minMagnitude);
         uriBuilder.appendQueryParameter("orderby", orderBy);
+
+        Log.e(LOG_TAG, "URI created: " + uriBuilder.toString());
 
         //Create a new loader for the given URI
         return new EarthquakeLoader(this, uriBuilder.toString());
