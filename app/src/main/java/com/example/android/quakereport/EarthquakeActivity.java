@@ -50,7 +50,7 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderCallb
     private static final int EARTHQUAKE_LOADER_ID = 1;
 
     //JSON query base URI
-    private static final String EARTHQUAKE_URL = "http://earthquake.usgs.gov/fdsnws/event/1/query";
+    private static final String EARTHQUAKE_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query";
 
     //Adapter for the list of earthquakes
     private EarthquakeAdapter mAdapter;
